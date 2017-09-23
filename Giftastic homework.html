@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Best Movies</title>
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Search the Movies</h1>
+
+    <div id="buttons-view"></div>
+
+    <form id="movie-form">
+      <label for="movie-input">Start A Movie Search</label>
+      <input type="text" id="movie-input"><br>
+      <input id="add-movie" type="submit" value="Add a Movie">
+    </form>
+
+ <div id="gifs-appear-here">
+  </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+     
+      var topics = ["The Fast and Furious", "Get Out", "It", "The Lion King"];
+
+      function alertMovieName() {
+        var movieName = $(this).attr("data-name");
+
+      }
+
+      function renderButtons() {
+
+        $("#buttons-view").empty();
+
+        for (var i = 0; i < topics.length; i++) {
+
+          var a = $("<button>");
+          a.attr("data-name", topics[i]);
+          a.text(topics[i]);
+          $("#buttons-view").append(a);
+        }
+      }
+
+      $("#add-movie").on("click", function(event) {
+        event.preventDefault();
+        var movie = $("#movie-input").val().trim();
+        topics.push(movie);
+        renderButtons();
+
+      });
+
+      $(document).on("click", ".movie", alertMovieName);
+
+      renderButtons();
+
+$("button").on("click", function() {
+
+       var person = $("renderButtons").val();
+
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        person + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+
+        .done(function(response) {
+
+          var results = response.data;
+
+          for (var i = 0; i < results.length; i++) {
+
+            if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+              var gifDiv = $("<div class='item'>");
+
+              var rating = results[i].rating;
+
+              var p = $("<p>").text("Rating: " + rating);
+              var personImage = $("<img>");
+
+              personImage.attr("src", results[i].images.fixed_height.url);
+
+              gifDiv.append(p);
+              gifDiv.append(personImage);
+
+              $("#gifs-appear-here").prepend(gifDiv);
+            }
+          }
+        });
+    });
+
+
+    </script>
+  </div>
+</body>
+
+</html>
